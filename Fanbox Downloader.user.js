@@ -1,8 +1,11 @@
 // ==UserScript==
-// @name         Fanbox Downloader
+// @name         Fanbox图片下载器
+// @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
+// @namespace    https://github.com/709924470/pixiv_fanbox_downloader
 // @version      beta_1.14.514
 // @description  Download Pixiv Fanbox Images.
+// @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
 // @match        https://www.pixiv.net/fanbox/creator/*/post/*
 // @grant        GM_xmlhttpRequest
@@ -25,23 +28,24 @@
                 if(!observeFlag){
                     break;
                 }
-                observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true })
+                observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true });
             }
         });
     }
     function mainFunc(){
-        observer.disconnect();
+        //observer.disconnect();
+        count = 0;
         //console.log("Trying to add a button...");
         var buttons = document.getElementsByTagName("button");
         var button = null;
         for(var i = 0; i < buttons.length; i++){
             var b = buttons[i];
-            if(b != undefined && b.innerText.includes("点赞")){
+            if(b !== undefined && b.innerText.includes("点赞")){
                 button = b;
                 break;
             }
         }
-        if(button == null){
+        if(button === null){
             console.warn("An error caused by can not find element.");
             return;
         }
@@ -64,13 +68,13 @@
     }
     function getAllImageUrl(){
         var elements = document.getElementsByClassName("lazyloaded");
-        var result = []
+        var result = [];
         for(var i = 0; i < elements.length; i++){
             var item = elements[i];
             if(item.tagName == "IMG"){
                 result.push(item.parentElement.href);
             }
-        };
+        }
         return result;
     }
     function generateName(url){
@@ -79,7 +83,7 @@
     function forceDownload(url, fileName){
         if(dlList.includes(fileName)){
             return;
-        };
+        }
         dlList.push(fileName);
         GM_xmlhttpRequest({
             method: "GET",
@@ -97,5 +101,5 @@
                 document.body.removeChild(tag);
             }
         });
-    };
+    }
 })();
