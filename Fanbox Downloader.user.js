@@ -9,7 +9,7 @@
 // @author       rec_000@126.com
 // @match        https://www.pixiv.net/fanbox/creator/*/post/*
 // @grant        GM_xmlhttpRequest
-// @require      https://raw.githubusercontent.com/Stuk/jszip/master/dist/jszip.min.js
+// @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js
 // ==/UserScript==
 
 (function() {
