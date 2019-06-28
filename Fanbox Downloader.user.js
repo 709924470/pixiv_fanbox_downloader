@@ -86,19 +86,23 @@
         return undefined;
     }
     function downloadImages_ZIP(...urls){
+        var i = 0;
         urls.forEach(function(url){
+            if(url === undefined){
+                console.warn("undefined url! > [" + i + "]" , urls);
+                i++;
+                return;
+            }
             forceDownload(url,generateName(url),true);
+            i++;
         });
         return undefined;
     }
     function getAllImageUrl(){
-        var elements = document.getElementsByClassName("lazyloaded");
+        var elements = document.querySelectorAll("img.lazyloaded");
         var result = [];
         for(var i = 0; i < elements.length; i++){
-            var item = elements[i];
-            if(item.tagName == "IMG"){
-                result.push(item.parentElement.href);
-            }
+            result.push(elements[i].getAttribute("data-src"));
         }
         return result;
     }
