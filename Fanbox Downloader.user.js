@@ -39,25 +39,31 @@
         zip = new JSZip();
         count = 0;
         //console.log("Trying to add a button...");
-        var buttons = document.getElementsByTagName("button");
-        var button = null;
-        for(var i = 0; i < buttons.length; i++){
-            var b = buttons[i];
-            if(b !== undefined && b.innerText.includes("点赞")){
-                button = b;
-                break;
-            }
-        }
-        if(button === null){
+        var buttons = [];
+        document.getElementsByTagName("button").forEach(function(el){el.classList.forEach(function(e){if(e.length == 6){buttons.push(el)}})})
+        // var button = null;
+        // for(var i = 0; i < buttons.length; i++){
+        //     var b = buttons[i];
+        //     if(b !== undefined && b.classList.contains("hUiOpJ")){
+        //         button = b;
+        //         break;
+        //     }
+        // }
+        var button = buttons[2];
+        if(button === null || button.firstChild.firstChild === undefined){
             console.warn("An error caused by can not find element.");
             return;
         }
+        // button = button[0];
+        // var magic_br = document.createElement("br");
+        // magic_br.style = "all: initial;";
+        // button.parentNode.appendChild(magic_br);
         var newButton = document.createElement("button");
         button.classList.forEach(function(item){
             newButton.classList.add(item);
         });
         newButton.id = "dl_images";
-        newButton.innerText = "下载图片";
+        newButton.innerText = "下载图片\nDirect download";
         newButton.onclick = function(){
             downloadImages(...getAllImageUrl());
         };
@@ -67,7 +73,7 @@
             zipButton.classList.add(item);
         });
         zipButton.id = "dl_zip";
-        zipButton.innerText = "打包下载";
+        zipButton.innerText = "打包下载\nDownload as Zip";
         zipButton.onclick = function(){
             downloadImages_ZIP(...getAllImageUrl());
         };
