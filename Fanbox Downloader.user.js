@@ -16,25 +16,35 @@
     'use strict';
     var dlList = [];
     var observer = new MutationObserver(rootObserver);
-    var observeFlag = true;
+    var observeFlag = false;
     observer.observe(document.getElementById("root"), { childList: true });
     var count = 0, downloaded = 0;
     var zip;
     function rootObserver(mutations) {
         mutations.forEach(function(mutation) {
             for (var i = 0; i < mutation.addedNodes.length; i++){
-                if(mutation.addedNodes[i].innerText.includes("点赞")){
-                    mainFunc();
-                    observeFlag = false;
-                }
+                // if(mutation.addedNodes[i].innerText.includes("点赞")){
+                //     mainFunc();
+                //     observeFlag = false;
+                // }
+                // if(!observeFlag){
+                //     break;
+                // }
                 if(!observeFlag){
+                    observeFlag = mainFunc();
+                    observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true });
+                }else{
                     break;
                 }
-                observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true });
             }
         });
     }
     function mainFunc(){
+        for(var e in document.getElementsByTagName('a')){
+            if(document.getElementsByTagName('a')[e].classList && document.getElementsByTagName('a')[e].classList.length == 2 && document.getElementsByTagName('a')[e].classList[0].length == 21 && document.getElementsByTagName('a')[e].classList[1].length == 20){
+                console.log(document.getElementsByTagName('a')[e])
+            }
+        }
         //observer.disconnect();
         zip = new JSZip();
         count = 0;
@@ -50,9 +60,9 @@
         //     }
         // }
         var button = buttons[2];
-        if(button === null || button.firstChild.firstChild === undefined){
+        if(button === undefined || button.firstChild === undefined || button.firstChild.firstChild === undefined){
             console.warn("An error caused by can not find element.");
-            return;
+            return false;
         }
         // button = button[0];
         // var magic_br = document.createElement("br");
@@ -78,6 +88,7 @@
             downloadImages_ZIP(...getAllImageUrl());
         };
         button.parentNode.appendChild(zipButton);
+        return true;
     }
     function downloadImages(...urls){
         urls.forEach(function(url){
