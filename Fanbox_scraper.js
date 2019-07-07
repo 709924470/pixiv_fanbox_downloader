@@ -19,6 +19,7 @@
     var dlList = [];
     var downloaded = 0;
     console.warn("Still in development! DO NOT USE!\n仍在开发中, 切勿使用!")
+    return;
     GM_xmlhttpRequest({
         method: "GET",
         url: url,
@@ -27,7 +28,7 @@
             var data = JSON.parse(response.responseText);
             for(var i in data.body.post.items){
                 if (data.body.post.items[i] === undefined){
-                    return;
+                    continue;
                 }
                 GM_xmlhttpRequest({
                     method: "GET",

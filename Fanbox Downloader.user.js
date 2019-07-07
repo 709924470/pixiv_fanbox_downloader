@@ -113,7 +113,7 @@
         var elements = document.querySelectorAll("img.lazyloaded");
         var result = [];
         for(var i = 0; i < elements.length; i++){
-            result.push(elements[i].getAttribute("data-src"));
+            result.push(elements[i].parentNode.parentNode.getAttribute("href"));
         }
         return result;
     }

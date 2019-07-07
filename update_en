@@ -1,2 +1,1 @@
-Change match method(Forgot change matching condition last time), should support all languages
-Fix bug that could not get image links
+Fixed downloaded image is thumbnail but not origin image
