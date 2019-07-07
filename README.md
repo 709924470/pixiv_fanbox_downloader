@@ -8,7 +8,7 @@ So he wrote this script
 And he is too lazy to write a readme, too.
 
 觉得好用的话请我喝杯奶茶吧\
-If you feel this script helped you or whatever reason yo want to donate some bucks for developer to buy a chai tea latté, feel free to use links below.
+If you feel this script helped you or whatever reason you want to donate some bucks for developer to buy a chai tea latté, feel free to use links below.
 
 ---
 
