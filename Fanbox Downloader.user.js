@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514
+// @version      beta_1.14.514.1
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -17,6 +17,7 @@
     var dlList = [];
     var observer = new MutationObserver(rootObserver);
     var observeFlag = false;
+    var lastLoc = window.location.href;
     observer.observe(document.getElementById("root"), { childList: true });
     var count = 0, downloaded = 0;
     var zip;
@@ -30,6 +31,11 @@
                 // if(!observeFlag){
                 //     break;
                 // }
+                if (window.location.href !== lastLoc){
+                    console.log("Refreshing page...");
+                    lastLoc = window.location.href;
+                    observeFlag = false;
+                }
                 if(!observeFlag){
                     observeFlag = mainFunc();
                     observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true });
@@ -40,34 +46,19 @@
         });
     }
     function mainFunc(){
-        for(var e in document.getElementsByTagName('a')){
-            if(document.getElementsByTagName('a')[e].classList && document.getElementsByTagName('a')[e].classList.length == 2 && document.getElementsByTagName('a')[e].classList[0].length == 21 && document.getElementsByTagName('a')[e].classList[1].length == 20){
-                console.log(document.getElementsByTagName('a')[e])
-            }
-        }
+        // for(var e in document.getElementsByTagName('a')){
+        //     if(document.getElementsByTagName('a')[e].classList && document.getElementsByTagName('a')[e].classList.length == 2 && document.getElementsByTagName('a')[e].classList[0].length == 21 && document.getElementsByTagName('a')[e].classList[1].length == 20){
+        //         console.log(document.getElementsByTagName('a')[e])
+        //     }
+        // }
         //observer.disconnect();
         zip = new JSZip();
         count = 0;
-        //console.log("Trying to add a button...");
-        var buttons = [];
-        document.getElementsByTagName("button").forEach(function(el){el.classList.forEach(function(e){if(e.length == 6){buttons.push(el)}})})
-        // var button = null;
-        // for(var i = 0; i < buttons.length; i++){
-        //     var b = buttons[i];
-        //     if(b !== undefined && b.classList.contains("hUiOpJ")){
-        //         button = b;
-        //         break;
-        //     }
-        // }
-        var button = buttons[2];
-        if(button === undefined || button.firstChild === undefined || button.firstChild.firstChild === undefined){
-            console.warn("An error caused by can not find element.");
+        var button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div/div[1]/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+        button = button.singleNodeValue;
+        if (button === null){
             return false;
         }
-        // button = button[0];
-        // var magic_br = document.createElement("br");
-        // magic_br.style = "all: initial;";
-        // button.parentNode.appendChild(magic_br);
         var newButton = document.createElement("button");
         button.classList.forEach(function(item){
             newButton.classList.add(item);
