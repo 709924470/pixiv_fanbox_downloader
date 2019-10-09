@@ -1,1 +1,2 @@
-Fixed button won't appear due to a change in page layout
+Fixed the script wont download all image if you dont load all of them,
+Add download progress for each image, check them in console.

@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.2
+// @version      beta_1.14.514.1919
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -103,7 +103,7 @@
         return undefined;
     }
     function getAllImageUrl(){
-        var elements = document.querySelectorAll("img.lazyloaded");
+        var elements = document.querySelectorAll("img.lazyloaded, img.lazyloading, img.lazyload");
         var result = [];
         for(var i = 0; i < elements.length; i++){
             result.push(elements[i].parentNode.parentNode.getAttribute("href"));
@@ -121,6 +121,7 @@
             return;
         }
         dlList.push(fileName);
+        console.log("[Fanbox Downloader.js] Downloading " + fileName);
         GM_xmlhttpRequest({
             method: "GET",
             url: url,
@@ -150,6 +151,12 @@
                         tag.click();
                         document.body.removeChild(tag);
                     });
+                }
+            },
+            onprogress: function (e) {
+                if (e.lengthComputable) {
+                    var ratio = Math.floor((e.loaded / e.total) * 100) + '%';
+                    console.log("[Fanbox Downloader.js] " + fileName + " > " + ratio);
                 }
             }
         });
