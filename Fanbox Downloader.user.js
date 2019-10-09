@@ -128,6 +128,7 @@
             binary: true,
             responseType: "blob",
             onload: function(response) {
+                console.log("[Fanbox Downloader.js] Downloaded " + fileName);
                 var urlCreator = window.URL || window.webkitURL;
                 var imageUrl = urlCreator.createObjectURL(response.response);
                 if(!zipFlag){
@@ -154,11 +155,16 @@
                 }
             },
             onprogress: function (e) {
-                if (e.lengthComputable) {
+                if(e.callengthComputable){
                     var ratio = Math.floor((e.loaded / e.total) * 100) + '%';
                     console.log("[Fanbox Downloader.js] " + fileName + " > " + ratio);
+                    return;
                 }
-            }
+                console.log("[Fanbox Downloader.js] " + fileName + " downloaded " + (e.loaded / 1024).toFixed(3) + "kB (No total length found)");
+            },
+            onerror: function(e){
+                console.error("[Fanbox Downloader.js] Failed downloading file " + fileName);
+            },
         });
     }
 })();
