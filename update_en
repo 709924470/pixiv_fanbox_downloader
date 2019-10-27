@@ -1,2 +1,1 @@
-Fixed the script wont download all image if you dont load all of them,
-Add download progress for each image, check them in console.
+Add backup method for add button.

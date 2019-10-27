@@ -21,44 +21,57 @@
     observer.observe(document.getElementById("root"), { childList: true });
     var count = 0, downloaded = 0;
     var zip;
+    var timeoutBackup;
     function rootObserver(mutations) {
         mutations.forEach(function(mutation) {
             for (var i = 0; i < mutation.addedNodes.length; i++){
-                // if(mutation.addedNodes[i].innerText.includes("点赞")){
-                //     mainFunc();
-                //     observeFlag = false;
-                // }
-                // if(!observeFlag){
-                //     break;
-                // }
                 if (window.location.href !== lastLoc){
-                    console.log("Refreshing page...");
+                    console.log("[Fanbox Downloader.js] Page refresh detected.");
                     lastLoc = window.location.href;
                     observeFlag = false;
+                    timeoutBackup = setInterval(function(){
+                        if(!observeFlag){
+                            document.querySelectorAll("button").forEach(
+                                function(e){
+                                    if(e.innerHTML.includes("svg")){
+                                        observeFlag = mainFunc(e);
+                                        if(observeFlag){
+                                            console.log("[Fanbox Downloader.js] Backup function working...");
+                                            clearInterval(timeoutBackup);
+                                        }
+                                    }
+                                }
+                            );
+                        }else{
+                            clearInterval(timeoutBackup);
+                        }
+                    }, 1000);
                 }
                 if(!observeFlag){
-                    observeFlag = mainFunc();
-                    observer.observe(mutation.addedNodes[i],{ childList: true, characterData: true, subtree: true });
+                    observeFlag = mainFunc(null);
+                    observer.observe(mutation.addedNodes[i],
+                        {
+                            childList: true,
+                            characterData: true, 
+                            subtree: true
+                        });
                 }else{
                     break;
                 }
             }
         });
     }
-    function mainFunc(){
-        // for(var e in document.getElementsByTagName('a')){
-        //     if(document.getElementsByTagName('a')[e].classList && document.getElementsByTagName('a')[e].classList.length == 2 && document.getElementsByTagName('a')[e].classList[0].length == 21 && document.getElementsByTagName('a')[e].classList[1].length == 20){
-        //         console.log(document.getElementsByTagName('a')[e])
-        //     }
-        // }
+    function mainFunc(btn){
         //observer.disconnect();
         zip = new JSZip();
         count = 0;
         var button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div[1]/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
         button = button.singleNodeValue;
-        if (button === null){
+        if (button === null && btn === null){
             console.error("[Fanbox Downloader.js] Cannot add download button!");
             return false;
+        }else if(button !== null || btn !== null){
+            button = button ? button : btn;
         }
         console.log("[Fanbox Downloader.js] Successfully added the button.");
         var newButton = document.createElement("button");
