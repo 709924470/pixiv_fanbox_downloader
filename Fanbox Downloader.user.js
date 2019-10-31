@@ -65,7 +65,7 @@
         var result = false;
         document.getElementsByTagName("a").forEach(
             function(e){
-                if(e.contains("plan")){
+                if(e.href.contains("plan")){
                     result = result | document.getElementsByTagName("ARTICLE")[0].contains(e);
                 }
             }
