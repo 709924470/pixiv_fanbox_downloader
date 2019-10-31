@@ -1,8 +1,5 @@
 # Fanbox 图片下载器
 
-**__必须先订阅作者才能正常使用此脚本!__**
-**__This Script only works after you subscribed/donate to the creator!__**
-
 开发者很懒, 所以写了这个脚本自动下载图片\
 Developer is too lazy to download the images one by one,\
 So he wrote this script

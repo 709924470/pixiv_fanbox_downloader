@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10
+// @version      beta_1.14.514.1919
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -61,25 +61,14 @@
             }
         });
     }
-    function checkIsSub(){
-        var result = false;
-        document.getElementsByTagName("a").forEach(
-            function(e){
-                if(e.href.contains("plan")){
-                    result = result | document.getElementsByTagName("ARTICLE")[0].contains(e);
-                }
-            }
-        );
-        return !result;
-    }
     function mainFunc(btn){
         //observer.disconnect();
         zip = new JSZip();
         count = 0;
         var button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div[1]/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
         button = button.singleNodeValue;
-        if ((button === null && btn === null) || !checkIsSub()){
-            console.error("[Fanbox Downloader.js] Cannot add download button!" + (checkIsSub() ? "" : "REASON=\"NOT_IN_FAN_PLAN\""));
+        if (button === null && btn === null){
+            console.error("[Fanbox Downloader.js] Cannot add download button!");
             return false;
         }else if(button !== null || btn !== null){
             button = button ? button : btn;
@@ -108,20 +97,12 @@
         return true;
     }
     function downloadImages(...urls){
-        if(!checkIsSub()){
-            alert("t5RIf eB1rsCBus Ot D3En UOy");
-            return "Why are you even thinking about download these files free???"
-        }
         urls.forEach(function(url){
             forceDownload(url,generateName(url),false);
         });
         return undefined;
     }
     function downloadImages_ZIP(...urls){
-        if(!checkIsSub()){
-            alert("t5RIf eB1rsCBus Ot D3En UOy");
-            return "Why are you even thinking about download these files free???"
-        }
         var i = 0;
         urls.forEach(function(url){
             if(url === undefined){
