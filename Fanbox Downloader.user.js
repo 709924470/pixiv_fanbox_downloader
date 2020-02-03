@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.2
+// @version      beta_1.14.514.1919.8.10.2a
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -28,6 +28,10 @@
                 if (window.location.href !== lastLoc){
                     console.log("[Fanbox Downloader.js] Page refresh detected.");
                     lastLoc = window.location.href;
+                    if (lastLoc.match(/https:\/\/www.pixiv.net\/fanbox\/creator\/\d+\/post\/\d+/) === null){
+                        console.log("[Fanbox Downloader.js] Not post page.");
+                        return;
+                    }
                     observeFlag = false;
                     timeoutBackup = setInterval(function(){
                         if(!observeFlag){
