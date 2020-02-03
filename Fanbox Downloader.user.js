@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.1
+// @version      beta_1.14.514.1919.8.10.2
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -76,8 +76,11 @@
         //observer.disconnect();
         zip = new JSZip();
         count = 0;
-        var button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div[2]/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
-        button = button.singleNodeValue;
+        var button = null;
+        for (var c = 0; c < 10 && button === null; c++){
+            button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div[' + c + ']/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            button = button.singleNodeValue;
+        }
         if ((button === null && btn === null) || !checkIsSub()){
             console.error("[Fanbox Downloader.js] Cannot add download button!" + (checkIsSub() ? "" : "REASON=\"NOT_IN_FAN_PLAN\""));
             return false;
