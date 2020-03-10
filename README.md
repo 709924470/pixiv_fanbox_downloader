@@ -3,6 +3,9 @@
 **__必须先订阅作者才能正常使用此脚本!__**
 **__This Script only works after you subscribed/donate to the creator!__**
 
+Any question related to this project you can either use issue or join my [telegram group](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)\
+任何关于本工程的问题可以用Issue提交或加入[我的电报群](https://t.me/joinchat/KP2S20Y99ihwPaYeeHabBQ)
+
 开发者很懒, 所以写了这个脚本自动下载图片\
 Developer is too lazy to download the images one by one,\
 So he wrote this script
