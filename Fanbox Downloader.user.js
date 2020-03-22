@@ -3,12 +3,14 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.2a
+// @version      beta_1.14.514.1919.8.10.2b
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
-// @match        https://www.pixiv.net/fanbox/creator/*/post/*
+// @match        https://www.pixiv.net/fanbox*
 // @grant        GM_xmlhttpRequest
+// @grant        GM_getValue
+// @grant        GM_setValue
 // @require      https://cdnjs.cloudflare.com/ajax/libs/jszip/3.2.0/jszip.min.js
 // ==/UserScript==
 
@@ -19,9 +21,12 @@
     var observeFlag = false;
     var lastLoc = window.location.href;
     observer.observe(document.getElementById("root"), { childList: true });
+    var enableZip = true, enableSingle = true, nameformat = "$title-", auto = false;
     var count = 0, downloaded = 0;
     var zip;
     var timeoutBackup;
+    var addFile = (name, content) => zip.file(name, content);
+    var generateName = (name, url) => name + ( "_" + count++ ) + "." + url.split(".")[url.split(".").length - 1];
     function rootObserver(mutations) {
         mutations.forEach(function(mutation) {
             for (var i = 0; i < mutation.addedNodes.length; i++){
@@ -77,7 +82,7 @@
         return !result;
     }
     function mainFunc(btn){
-        //observer.disconnect();
+        initSettings();
         zip = new JSZip();
         count = 0;
         var button = null;
@@ -91,7 +96,21 @@
         }else if(button !== null || btn !== null){
             button = button ? button : btn;
         }
+        if(getAllImageUrl().length == 0){
+            console.warn("[Fanbox Downloader.js] No image found, not adding buttons.");
+            return false;
+        }
+        if(auto){
+            if(enableZip){
+                downloadImages_ZIP(...getAllImageUrl());
+            }else{
+                downloadImages(...getAllImageUrl());
+            }
+        }
         console.log("[Fanbox Downloader.js] Successfully added the button.");
+
+        var p = document.createElement("p");
+
         var newButton = document.createElement("button");
         button.classList.forEach(function(item){
             newButton.classList.add(item);
@@ -101,7 +120,8 @@
         newButton.onclick = function(){
             downloadImages(...getAllImageUrl());
         };
-        button.parentNode.appendChild(newButton);
+        p.appendChild(newButton);
+        p.appendChild(document.createElement("br"));
         var zipButton = document.createElement("button");
         button.classList.forEach(function(item){
             zipButton.classList.add(item);
@@ -111,36 +131,188 @@
         zipButton.onclick = function(){
             downloadImages_ZIP(...getAllImageUrl());
         };
-        button.parentNode.appendChild(zipButton);
+        p.appendChild(zipButton);
+        p.oncontextmenu = function(e){
+            createSettingsPopup();
+            e.preventDefault();
+        };
+        button.parentNode.appendChild(p);
         return true;
     }
     function downloadImages(...urls){
         if(!checkIsSub()){
             alert("t5RIf eB1rsCBus Ot D3En UOy");
-            return "Why are you even thinking about download these files free???"
+            return "Why are you even thinking about download files for free???";
         }
+        var name = formatName();
         urls.forEach(function(url){
-            forceDownload(url,generateName(url),false);
+            forceDownload(url,generateName(name, url),false);
         });
         return undefined;
     }
     function downloadImages_ZIP(...urls){
         if(!checkIsSub()){
             alert("t5RIf eB1rsCBus Ot D3En UOy");
-            return "Why are you even thinking about download these files free???"
+            return "Why are you even thinking about download these files free???";
         }
-        var i = 0;
+        var i = 0, name = formatName();
         urls.forEach(function(url){
             if(url === undefined){
                 console.warn("undefined url! > [" + i + "]" , urls);
                 i++;
                 return;
             }
-            forceDownload(url,generateName(url),true);
+            forceDownload(url,generateName(name, url),true);
             i++;
         });
         return undefined;
     }
+
+    function formatName(){
+        var scripts = document.getElementsByTagName("SCRIPT");
+        var data;
+        scripts.forEach((v, i) => {
+            if(v.type.indexOf("json") != -1){
+                data = eval(v.innerText)[0];
+            }
+        });
+        var dict = {
+            "$title": document.title.split("｜")[0],
+            "$author": document.title.split("｜")[1],
+            "$userid": location.href.split("/")[location.href.split("/").length - 3],
+            "$createdate": data["datePublished"],
+            "$editdata": data["dateModified"],
+        };
+        var result = nameformat;
+        for(var i in dict){
+            if(nameformat.indexOf(i) != -1){
+                result = result.replace(i, dict[i]);
+            }
+        }
+        return result.replace("/", "_");
+    }
+
+    function initSettings(){
+        enableZip = GM_getValue("ZIP", true);
+        enableSingle = GM_getValue("Single", true);
+        nameformat = GM_getValue("NameFormat", nameformat);
+        auto = GM_getValue("Auto", false);
+
+        GM_setValue("ZIP", enableZip);
+        GM_setValue("Single", enableSingle);
+        GM_setValue("NameFormat", nameformat);
+        GM_setValue("Auto", auto);
+    }
+
+    function createSettingsPopup(){
+        if (document.getElementById("settings-style") !== null){
+            var panel = document.getElementById("settings");
+            panel.style.display = "block";
+            return;
+        }
+
+        var style = document.createElement("style");
+        style.id = "settings-style";
+        style.innerHTML = `.settings {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            padding-top: 100px;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+          }
+          .settings-content {
+            background-color: #fefefe;
+            margin: auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 5px;
+            width: 60%;
+          }
+          .close {
+            color: #aaaaaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+          }
+          .close:hover,
+          .close:focus {
+            color: #000;
+            text-decoration: none;
+            cursor: pointer;
+          }`;
+        document.body.appendChild(style);
+
+        var panel = document.createElement("div");
+        panel.className = "settings";
+        panel.id = "settings";
+        panel.style.display = "block";
+
+        window.onclick = (e) => {
+            if (e.target.id == "settings"){
+                document.getElementById("settings").style.display = "none";
+            }
+        };
+
+        var content = document.createElement("div");
+        content.className = "settings-content";
+        panel.appendChild(content);
+
+        var close = document.createElement("span");
+        close.className = "close";
+        close.innerHTML = "&times;";
+        close.onclick = (e) => {document.getElementById("settings").style.display = "none";};
+        content.appendChild(close);
+
+        content.innerHTML += `<p><h2>Fanbox downloader settings 设置</h2></p>
+        <p><input type="checkbox" id="auto" unchecked>
+        <label for="auto">自动下载 / Auto download</label></p>
+        <p style="padding-left: 2em;"><input type="radio" id="auto-single" value="single" disabled>
+        <label for="auto-single">自动单张下载 / Automatically download as single Images</label></p>
+        <p style="padding-left: 2em;"><input type="radio" id="auto-zip" value="zip" disabled checked>
+        <label for="auto-zip">自动打包下载 / Automatically download as packed Zip file</label></p>
+        <p><br><label for="format">命名格式 / File name format</label>
+        <input type="text" id="format">
+        <br><br> "$title" = 标题&nbsp;&nbsp;&nbsp;&nbsp;"$author" = 作者名&nbsp;&nbsp;&nbsp;&nbsp;"$userid" = 用户ID
+        <br><br> "$createdate" = 创建日期&nbsp;&nbsp;&nbsp;&nbsp;"$editdata" = 修改日期</p><p></p>`;
+
+        var save = document.createElement("button");
+        save.innerText = "Save 保存设置";
+        
+        content.appendChild(save);
+        document.body.appendChild(panel);
+
+        document.getElementById("format").value = nameformat;
+
+        save.onclick = (e) => {
+            auto = document.getElementById("auto").checked;
+            enableZip = document.getElementById("auto-zip").checked;
+            enableSingle = document.getElementById("auto-single").checked;
+            nameformat = document.getElementById("format").value;
+            GM_setValue("ZIP", enableZip);
+            GM_setValue("Single", enableSingle);
+            GM_setValue("NameFormat", nameformat);
+            GM_setValue("Auto", auto);
+            alert("设置成功\nSaved.");
+            document.getElementById("settings").style.display = "none";
+        };
+
+        document.getElementById("auto").onchange = (e) => {
+            if(e.target.checked){
+                document.getElementById("auto-single").disabled = false;
+                document.getElementById("auto-zip").disabled = false;
+            }else{
+                document.getElementById("auto-single").disabled = true;
+                document.getElementById("auto-zip").disabled = true;
+            }
+        }
+    }
+
     function getAllImageUrl(){
         var elements = document.querySelectorAll("img.lazyloaded, img.lazyloading, img.lazyload");
         var result = [];
@@ -148,12 +320,6 @@
             result.push(elements[i].parentNode.parentNode.getAttribute("href"));
         }
         return result;
-    }
-    function generateName(url){
-        return document.title.split("｜")[0] + ( "_" + count++ ) + "." + url.split(".")[url.split(".").length - 1];
-    }
-    function addFile(name,content){
-        zip.file(name,content);
     }
     function forceDownload(url, fileName,zipFlag){
         if(dlList.includes(fileName)){
@@ -186,7 +352,7 @@
                         var imageUrl = urlCreator.createObjectURL(blob);
                         var tag = document.createElement('a');
                         tag.href = imageUrl;
-                        tag.download = document.title.split("｜")[0] + ".zip";
+                        tag.download = formatName() + ".zip";
                         document.body.appendChild(tag);
                         tag.click();
                         document.body.removeChild(tag);
