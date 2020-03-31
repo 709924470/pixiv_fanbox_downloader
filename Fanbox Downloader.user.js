@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.2b
+// @version      beta_1.14.514.1919.8.10.2.1
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -74,7 +74,7 @@
         var result = false;
         document.getElementsByTagName("a").forEach(
             function(e){
-                if(e.href.includes("plan")){
+                if(e.href.includes("plan") && document.getElementsByTagName("ARTICLE")[0] !== undefined){
                     result = result | document.getElementsByTagName("ARTICLE")[0].contains(e);
                 }
             }
@@ -90,9 +90,26 @@
             button = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div/div[1]/div/div[' + c + ']/div/button', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
             button = button.singleNodeValue;
         }
-        if ((button === null && btn === null) || !checkIsSub()){
-            console.error("[Fanbox Downloader.js] Cannot add download button!" + (checkIsSub() ? "" : "REASON=\"NOT_IN_FAN_PLAN\""));
+        if(!checkIsSub()){
+            console.error("[Fanbox Downloader.js] Cannot add download button! REASON=\"NOT_IN_FAN_PLAN\"");
             return false;
+        }
+        if ((button === null && btn === null)){
+            console.error("[Fanbox Downloader.js] Cannot add download button! Attempting to use backup function.");
+            var svgs = document.getElementsByTagName("svg");
+            svgs.forEach((item) => {
+                var parentNode = item.parentNode;
+                while (parentNode.tagName.toLowerCase() != "button"){
+                    if(parentNode.tagName.toLowerCase() == "body"){
+                        return;
+                    }
+                    parentNode = parentNode.parentNode;
+                }
+                button = parentNode;
+            });
+            if(button === null){
+                console.error("[Fanbox Downloader.js] Cannot add download button!");
+            }
         }else if(button !== null || btn !== null){
             button = button ? button : btn;
         }
@@ -170,7 +187,7 @@
 
     function formatName(){
         var scripts = document.getElementsByTagName("SCRIPT");
-        var data;
+        var data = undefined;
         scripts.forEach((v, i) => {
             if(v.type.indexOf("json") != -1){
                 data = eval(v.innerText)[0];
@@ -180,8 +197,8 @@
             "$title": document.title.split("｜")[0],
             "$author": document.title.split("｜")[1],
             "$userid": location.href.split("/")[location.href.split("/").length - 3],
-            "$createdate": data["datePublished"],
-            "$editdata": data["dateModified"],
+            "$createdate": data === undefined ? new Date().getTime() : data["datePublished"],
+            "$editdata": data === undefined ? new Date().getTime() : data["dateModified"],
         };
         var result = nameformat;
         for(var i in dict){
