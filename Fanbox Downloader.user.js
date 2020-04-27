@@ -7,7 +7,7 @@
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
-// @match        https://www.pixiv.net/fanbox*
+// @match        https://fanbox.cc/*
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -33,7 +33,7 @@
                 if (window.location.href !== lastLoc){
                     console.log("[Fanbox Downloader.js] Page refresh detected.");
                     lastLoc = window.location.href;
-                    if (lastLoc.match(/https:\/\/www.pixiv.net\/fanbox\/creator\/\d+\/post\/\d+/) === null){
+                    if (lastLoc.match(/https:\/\/fanbox\.cc\/\@.+?\/posts\/\d+/) === null){
                         console.log("[Fanbox Downloader.js] Not post page.");
                         return;
                     }
