@@ -3,12 +3,11 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.2.1
+// @version      beta_1.14.514.1919.8.10.4
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
-// @match        https://www.fanbox.cc/*
-// @match        https://fanbox.cc/*
+// @include      /^https?:\/\/(www\.)?fanbox\.cc\/*/
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
@@ -18,10 +17,19 @@
 (function() {
     'use strict';
     var dlList = [];
+    var guardObserver = new MutationObserver(guardingObserver);
+    var guardState = true;
     var observer = new MutationObserver(rootObserver);
+    function guardingObserver(mu){
+        mu.forEach((m) => {
+            try{
+                observer.observe(document.getElementById("root"), { childList: true });
+            }catch(err){}
+        });
+    };
+    guardObserver.observe(document.body, {childList:true,subtree:true});
     var observeFlag = false;
     var lastLoc = window.location.href;
-    observer.observe(document.getElementById("root"), { childList: true });
     var enableZip = true, enableSingle = true, nameformat = "$title-", auto = false;
     var count = 0, downloaded = 0;
     var zip;
@@ -29,12 +37,13 @@
     var addFile = (name, content) => zip.file(name, content);
     var generateName = (name, url) => name + ( "_" + count++ ) + "." + url.split(".")[url.split(".").length - 1];
     function rootObserver(mutations) {
+        guardState = false;
         mutations.forEach(function(mutation) {
             for (var i = 0; i < mutation.addedNodes.length; i++){
                 if (window.location.href !== lastLoc){
                     console.log("[Fanbox Downloader.js] Page refresh detected.");
                     lastLoc = window.location.href;
-                    if (lastLoc.match(/https:\/\/fanbox\.cc\/\@.+?\/posts\/\d+/) === null){
+                    if (lastLoc.match(/https?:\/\/(www\.)?fanbox\.cc\/\@.+?\/posts\/\d+/) === null){
                         console.log("[Fanbox Downloader.js] Not post page.");
                         return;
                     }
