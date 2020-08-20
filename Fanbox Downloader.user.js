@@ -7,7 +7,7 @@
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
-// @include      /^https?:\/\/(www\.)?fanbox\.cc\/*/
+// @include      /^https?:\/\/(.+?\.)?fanbox\.cc\/posts/
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
