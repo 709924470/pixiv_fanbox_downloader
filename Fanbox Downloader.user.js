@@ -3,11 +3,11 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.8
+// @version      beta_1.14.514.1919.8.10.69
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
-// @include      /^https?:\/\/(.+?\.)?fanbox\.cc\/posts/
+// @include      /^https?:\/\/(.+?\.)?fanbox\.cc\/(@.+\/)?posts\/\d+/
 // @grant        GM_xmlhttpRequest
 // @grant        GM_getValue
 // @grant        GM_setValue
