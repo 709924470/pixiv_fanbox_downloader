@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.69
+// @version      beta_1.14.514.1919.8.10.70
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
@@ -19,6 +19,7 @@
     var dlList = [];
     var guardObserver = new MutationObserver(guardingObserver);
     var guardState = true;
+    var scriptState = false;
     var observer = new MutationObserver(rootObserver);
     function guardingObserver(mu){
         mu.forEach((m) => {
@@ -28,6 +29,8 @@
         });
     };
     guardObserver.observe(document.body, {childList:true,subtree:true});
+    setTimeout(() => mainFunc(null), 5000);
+    window.forceAddbutton = mainFunc;
     var observeFlag = false;
     var lastLoc = window.location.href;
     var enableZip = true, enableSingle = true, nameformat = "$title-", auto = false;
@@ -93,6 +96,9 @@
     }
     function mainFunc(btn){
         initSettings();
+        if (scriptState){
+            return;
+        }
         zip = new JSZip();
         count = 0;
         var button = null;
@@ -127,6 +133,7 @@
             console.warn("[Fanbox Downloader.js] No image found, not adding buttons.");
             return false;
         }
+        scriptState = true;
         if(auto){
             if(enableZip){
                 downloadImages_ZIP(...getAllImageUrl());
