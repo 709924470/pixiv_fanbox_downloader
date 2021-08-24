@@ -3,7 +3,7 @@
 // @name:en      Fanbox Downloader
 // @namespace    http://tampermonkey.net/
 // @namespace    https://github.com/709924470/pixiv_fanbox_downloader
-// @version      beta_1.14.514.1919.8.10.70
+// @version      beta_1.14.514.1919.8.10.80
 // @description  Download Pixiv Fanbox Images.
 // @description:en  Download Pixiv Fanbox Images.
 // @author       rec_000@126.com
