@@ -163,6 +163,9 @@
         zipButton.id = "dl_zip";
         zipButton.innerText = "打包下载\nDownload as Zip";
         zipButton.onclick = function(){
+            var content = document.evaluate('//*[@id="root"]/div[5]/div[1]/div/div[3]/div/div[1]/div/article', document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null);
+            content = content?.singleNodeValue || document.createElement("article");
+            addFile("description.txt", content?.innerText || "");
             downloadImages_ZIP(...getAllImageUrl());
         };
         p.appendChild(zipButton);
