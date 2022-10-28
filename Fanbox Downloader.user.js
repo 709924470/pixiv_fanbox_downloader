@@ -84,15 +84,7 @@
         });
     }
     function checkIsSub(){
-        var result = false;
-        [...document.getElementsByTagName("a")].forEach(
-            function(e){
-                if(e.href.includes("plan") && document.getElementsByTagName("ARTICLE")[0] !== undefined){
-                    result = result | document.getElementsByTagName("ARTICLE")[0].contains(e);
-                }
-            }
-        );
-        return !result;
+        return document.evaluate("//article//a[contains(@href, 'plans')]", document, null, XPathResult.ORDERED_NODE_SNAPSHOT_TYPE, null).snapshotLength == 0;
     }
     function mainFunc(btn){
         initSettings();
